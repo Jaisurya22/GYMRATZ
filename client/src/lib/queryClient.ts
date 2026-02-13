@@ -15,7 +15,13 @@ export async function apiRequest(
     });
 
     if (!res.ok) {
-        const json = await res.json();
+        let json;
+        try {
+            json = await res.json();
+        } catch (e) {
+            // If response is not JSON, use the status text
+            throw new Error(res.statusText || `Server error: ${res.status}`);
+        }
         throw new Error(json.message || res.statusText);
     }
 

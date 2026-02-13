@@ -26,19 +26,38 @@ export default function AuthPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-            <Card className="w-full max-w-md">
-                <CardHeader>
-                    <CardTitle>Welcome to Gym Rat</CardTitle>
-                    <CardDescription>
+        <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
+            {/* Background ambient glow */}
+            <div className="absolute top-[-20%] left-[-20%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[150px] pointer-events-none" />
+            <div className="absolute bottom-[-20%] right-[-20%] w-[50%] h-[50%] rounded-full bg-blue-500/10 blur-[150px] pointer-events-none" />
+
+            <Card className="w-full max-w-md bg-card/60 backdrop-blur-xl border-primary/20 shadow-2xl shadow-primary/10 animate-in fade-in zoom-in duration-500">
+                <CardHeader className="text-center space-y-2 pb-6 border-b border-border/40">
+                    <div className="mx-auto w-12 h-12 bg-gradient-brand rounded-xl flex items-center justify-center mb-2 shadow-neon">
+                        <span className="text-2xl">💪</span>
+                    </div>
+                    <CardTitle className="text-3xl font-extrabold tracking-tighter">
+                        GYM <span className="text-primary italic">RATZ</span>
+                    </CardTitle>
+                    <CardDescription className="text-base">
                         Your personal AI-powered fitness companion
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <Tabs defaultValue="login">
-                        <TabsList className="grid w-full grid-cols-2 mb-4">
-                            <TabsTrigger value="login">Login</TabsTrigger>
-                            <TabsTrigger value="register">Register</TabsTrigger>
+                <CardContent className="pt-6">
+                    <Tabs defaultValue="login" className="space-y-6">
+                        <TabsList className="grid w-full grid-cols-2 p-1 bg-background/50 border border-border/50">
+                            <TabsTrigger
+                                value="login"
+                                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300"
+                            >
+                                Login
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="register"
+                                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300"
+                            >
+                                Register
+                            </TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="login">
@@ -54,7 +73,7 @@ export default function AuthPage() {
                                             <FormItem>
                                                 <FormLabel>Username</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="johndoe" {...field} />
+                                                    <Input placeholder="Enter your username" {...field} className="bg-background/50 border-input/50 focus:border-primary/50" />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -67,7 +86,7 @@ export default function AuthPage() {
                                             <FormItem>
                                                 <FormLabel>Password</FormLabel>
                                                 <FormControl>
-                                                    <Input type="password" {...field} />
+                                                    <Input type="password" placeholder="••••••••" {...field} className="bg-background/50 border-input/50 focus:border-primary/50" />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -75,13 +94,13 @@ export default function AuthPage() {
                                     />
                                     <Button
                                         type="submit"
-                                        className="w-full"
+                                        className="w-full bg-primary hover:bg-primary/90 shadow-neon font-bold mt-2"
                                         disabled={loginMutation.isPending}
                                     >
                                         {loginMutation.isPending && (
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                         )}
-                                        Login
+                                        Login to Dashboard
                                     </Button>
                                 </form>
                             </Form>
@@ -100,7 +119,7 @@ export default function AuthPage() {
                                             <FormItem>
                                                 <FormLabel>Username</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="johndoe" {...field} />
+                                                    <Input placeholder="Choose a username" {...field} className="bg-background/50 border-input/50 focus:border-primary/50" />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -113,7 +132,7 @@ export default function AuthPage() {
                                             <FormItem>
                                                 <FormLabel>Password</FormLabel>
                                                 <FormControl>
-                                                    <Input type="password" {...field} />
+                                                    <Input type="password" placeholder="Choose a strong password" {...field} className="bg-background/50 border-input/50 focus:border-primary/50" />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -121,13 +140,13 @@ export default function AuthPage() {
                                     />
                                     <Button
                                         type="submit"
-                                        className="w-full"
+                                        className="w-full bg-primary hover:bg-primary/90 shadow-neon font-bold mt-2"
                                         disabled={registerMutation.isPending}
                                     >
                                         {registerMutation.isPending && (
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                         )}
-                                        Register
+                                        Create Account
                                     </Button>
                                 </form>
                             </Form>

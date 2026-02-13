@@ -8,84 +8,94 @@ export default function Dashboard() {
 
     return (
         <Layout>
-            <div className="space-y-6">
-                <div>
-                    <h2 className="text-3xl font-bold tracking-tight">
-                        Welcome back, {user?.username}!
+            <div className="space-y-8 animate-fade-in">
+                <div className="flex flex-col gap-2">
+                    <h2 className="text-4xl font-extrabold tracking-tight text-white">
+                        Welcome back, <span className="text-primary italic">{user?.username}</span>
                     </h2>
-                    <p className="text-muted-foreground">
+                    <p className="text-muted-foreground text-lg">
                         Here's your fitness overview for today.
                     </p>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-3">
-                    <Card>
+                <div className="grid gap-6 md:grid-cols-3">
+                    <Card className="bg-card/50 backdrop-blur-sm border-primary/20 hover:border-primary/50 transition-colors shadow-lg shadow-primary/5">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">
+                            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
                                 Workouts This Week
                             </CardTitle>
-                            <Activity className="h-4 w-4 text-muted-foreground" />
+                            <Activity className="h-5 w-5 text-primary drop-shadow-neon" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">3</div>
-                            <p className="text-xs text-muted-foreground">
-                                +1 from last week
+                            <div className="text-3xl font-bold text-white">3</div>
+                            <p className="text-xs text-muted-foreground mt-1">
+                                <span className="text-green-500 font-medium">+1</span> from last week
                             </p>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="bg-card/50 backdrop-blur-sm border-primary/20 hover:border-primary/50 transition-colors shadow-lg shadow-primary/5">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">
+                            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
                                 Calories Burned
                             </CardTitle>
-                            <Flame className="h-4 w-4 text-muted-foreground" />
+                            <Flame className="h-5 w-5 text-orange-500 drop-shadow-neon" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">1,250</div>
-                            <p className="text-xs text-muted-foreground">
-                                +15% from last week
+                            <div className="text-3xl font-bold text-white">1,250</div>
+                            <p className="text-xs text-muted-foreground mt-1">
+                                <span className="text-green-500 font-medium">+15%</span> from last week
                             </p>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="bg-card/50 backdrop-blur-sm border-primary/20 hover:border-primary/50 transition-colors shadow-lg shadow-primary/5">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">
+                            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
                                 Current Streak
                             </CardTitle>
-                            <Trophy className="h-4 w-4 text-muted-foreground" />
+                            <Trophy className="h-5 w-5 text-yellow-500 drop-shadow-neon" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">5 Days</div>
-                            <p className="text-xs text-muted-foreground">
+                            <div className="text-3xl font-bold text-white">5 Days</div>
+                            <p className="text-xs text-muted-foreground mt-1 text-primary">
                                 Keep it up!
                             </p>
                         </CardContent>
                     </Card>
                 </div>
 
-                {/* Recent Activity Section could go here */}
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                    <Card className="col-span-4">
+                {/* Recent Activity Section */}
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+                    <Card className="col-span-4 bg-card/40 border-border/60">
                         <CardHeader>
-                            <CardTitle>Recent Activity</CardTitle>
+                            <CardTitle className="text-xl">Recent Activity</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-sm text-muted-foreground">
-                                No recent workouts recorded. Start tracking now!
-                            </p>
+                            <div className="flex flex-col items-center justify-center py-8 text-center space-y-3">
+                                <Activity className="h-10 w-10 text-muted-foreground opacity-20" />
+                                <p className="text-sm text-muted-foreground">
+                                    No recent workouts recorded.
+                                    <br />
+                                    <span className="text-primary font-medium cursor-pointer hover:underline">Start tracking now!</span>
+                                </p>
+                            </div>
                         </CardContent>
                     </Card>
 
-                    <Card className="col-span-3">
+                    <Card className="col-span-3 bg-card/40 border-border/60">
                         <CardHeader>
-                            <CardTitle>Nutrition Quick View</CardTitle>
+                            <CardTitle className="text-xl">Nutrition Quick View</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-sm text-muted-foreground">
-                                You haven't logged any meals today.
-                            </p>
+                            <div className="flex flex-col items-center justify-center py-8 text-center space-y-3">
+                                <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center text-muted-foreground">
+                                    <span className="text-lg">🍎</span>
+                                </div>
+                                <p className="text-sm text-muted-foreground">
+                                    You haven't logged any meals today.
+                                </p>
+                            </div>
                         </CardContent>
                     </Card>
                 </div>
