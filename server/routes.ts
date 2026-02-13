@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { insertWorkoutSchema, insertExerciseSchema, insertFoodLogSchema } from "@shared/schema";
 import { storage } from "./storage";
+import { analyzeNutrition } from "./gemini";
 
 export async function registerRoutes(app: Express): Promise<Server> {
     setupAuth(app);
@@ -63,6 +64,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         const log = await storage.createFoodLog(parsed.data);
         res.json(log);
+    });
+
+    app.post("/api/nutrition/analyze", async (req, res) => {
+        if (!req.isAuthenticated()) return res.sendStatus(401);
+
+        try {
+            const { text } = req.body;
+            if (!text) {
+                return res.status(400).json({ message: "Text description is required" });
+            }
+
+            const analysis = await analyzeNutrition(text);
+            res.json(analysis);
+        } catch (error: any) {
+            res.status(500).json({ message: error.message });
+        }
     });
 
     const httpServer = createServer(app);
