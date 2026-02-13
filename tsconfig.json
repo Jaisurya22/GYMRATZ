@@ -4,6 +4,7 @@
     "shared/**/*",
     "server/**/*"
   ],
+  // Force editor reload
   "exclude": [
     "node_modules",
     "build",
@@ -24,7 +25,11 @@
     "jsx": "preserve",
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "skipLibCheck": true,
     "allowImportingTsExtensions": true,
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
     "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
