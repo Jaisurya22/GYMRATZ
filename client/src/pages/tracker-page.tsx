@@ -17,7 +17,7 @@ export default function TrackerPage() {
 
     const createWorkoutMutation = useMutation({
         mutationFn: async () => {
-            const newWorkout: InsertWorkout = {
+            const newWorkout: Omit<InsertWorkout, "userId"> = {
                 date: new Date().toISOString(),
                 name: `Workout ${new Date().toLocaleDateString()}`,
             };

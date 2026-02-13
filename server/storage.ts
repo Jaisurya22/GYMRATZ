@@ -3,8 +3,10 @@ import { db, pool } from "./db";
 import { eq } from "drizzle-orm";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
+import MemoryStore from "memorystore";
 
 const PostgresSessionStore = connectPg(session);
+const MemorySessionStore = MemoryStore(session);
 
 export interface IStorage {
     getUser(id: number): Promise<User | undefined>;
@@ -23,6 +25,88 @@ export interface IStorage {
     // Nutrition
     getFoodLogs(userId: number): Promise<FoodLog[]>;
     createFoodLog(foodLog: InsertFoodLog): Promise<FoodLog>;
+}
+
+export class MemStorage implements IStorage {
+    private users: Map<number, User>;
+    private exercises: Map<number, Exercise>;
+    private workouts: Map<number, Workout>;
+    private foodLogs: Map<number, FoodLog>;
+    sessionStore: session.Store;
+    currentId: { [key: string]: number };
+
+    constructor() {
+        this.users = new Map();
+        this.exercises = new Map();
+        this.workouts = new Map();
+        this.foodLogs = new Map();
+        this.currentId = { users: 1, exercises: 1, workouts: 1, foodLogs: 1 };
+        this.sessionStore = new MemorySessionStore({
+            checkPeriod: 86400000,
+        });
+    }
+
+    async getUser(id: number): Promise<User | undefined> {
+        return this.users.get(id);
+    }
+
+    async getUserByUsername(username: string): Promise<User | undefined> {
+        return Array.from(this.users.values()).find(
+            (user) => user.username === username,
+        );
+    }
+
+    async createUser(insertUser: InsertUser): Promise<User> {
+        const id = this.currentId.users++;
+        const user: User = { ...insertUser, id };
+        this.users.set(id, user);
+        return user;
+    }
+
+    async getExercises(): Promise<Exercise[]> {
+        return Array.from(this.exercises.values());
+    }
+
+    async createExercise(exercise: InsertExercise): Promise<Exercise> {
+        const id = this.currentId.exercises++;
+        const newExercise: Exercise = {
+            ...exercise,
+            id,
+            description: exercise.description ?? null
+        };
+        this.exercises.set(id, newExercise);
+        return newExercise;
+    }
+
+    async createWorkout(workout: InsertWorkout): Promise<Workout> {
+        const id = this.currentId.workouts++;
+        const newWorkout: Workout = {
+            ...workout,
+            id,
+            name: workout.name ?? null
+        };
+        this.workouts.set(id, newWorkout);
+        return newWorkout;
+    }
+
+    async getWorkouts(userId: number): Promise<Workout[]> {
+        return Array.from(this.workouts.values()).filter(
+            (workout) => workout.userId === userId,
+        );
+    }
+
+    async getFoodLogs(userId: number): Promise<FoodLog[]> {
+        return Array.from(this.foodLogs.values()).filter(
+            (log) => log.userId === userId,
+        );
+    }
+
+    async createFoodLog(foodLog: InsertFoodLog): Promise<FoodLog> {
+        const id = this.currentId.foodLogs++;
+        const newLog: FoodLog = { ...foodLog, id };
+        this.foodLogs.set(id, newLog);
+        return newLog;
+    }
 }
 
 export class DatabaseStorage implements IStorage {
@@ -78,4 +162,4 @@ export class DatabaseStorage implements IStorage {
     }
 }
 
-export const storage = new DatabaseStorage();
+export const storage = process.env.DATABASE_URL ? new DatabaseStorage() : new MemStorage();
