@@ -13,15 +13,18 @@ import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Plus, Sparkles } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-// Schema for the form, excluding userId and id which are handled by backend/auto-gen
+const MEAL_TYPES = ["Breakfast", "Lunch", "Dinner", "Snack", "Pre-Workout", "Post-Workout"] as const;
+
 const formSchema = z.object({
     foodName: z.string().min(1, "Food name is required"),
     calories: z.coerce.number().min(0, "Calories must be positive"),
     protein: z.coerce.number().min(0, "Protein must be positive"),
     carbs: z.coerce.number().min(0, "Carbs must be positive"),
     fat: z.coerce.number().min(0, "Fat must be positive"),
-    mealType: z.string().default("Snack"),
+    mealType: z.enum(MEAL_TYPES),
+    portionWeight: z.coerce.number().min(0).optional(),
 });
 
 export default function NutritionPage() {
@@ -35,7 +38,8 @@ export default function NutritionPage() {
             protein: 0,
             carbs: 0,
             fat: 0,
-            mealType: "Snack"
+            mealType: "Snack",
+            portionWeight: undefined,
         },
     });
 
@@ -70,10 +74,18 @@ export default function NutritionPage() {
 
     const createLogMutation = useMutation({
         mutationFn: async (values: z.infer<typeof formSchema>) => {
-            const newLog = {
-                ...values,
+            const newLog: Record<string, unknown> = {
+                foodName: values.foodName,
+                calories: values.calories,
+                protein: values.protein,
+                carbs: values.carbs,
+                fat: values.fat,
+                mealType: values.mealType,
                 date: new Date().toISOString(),
             };
+            if (values.portionWeight && values.portionWeight > 0) {
+                newLog.portionWeight = values.portionWeight;
+            }
             const res = await apiRequest("POST", "/api/nutrition", newLog);
             return res.json();
         },
@@ -235,6 +247,41 @@ export default function NutritionPage() {
                                                 )}
                                             />
                                         </div>
+                                        <FormField
+                                            control={form.control}
+                                            name="mealType"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Meal Type</FormLabel>
+                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                        <FormControl>
+                                                            <SelectTrigger className="bg-background/50 border-input/50 focus:border-primary/50">
+                                                                <SelectValue placeholder="Select meal type" />
+                                                            </SelectTrigger>
+                                                        </FormControl>
+                                                        <SelectContent>
+                                                            {MEAL_TYPES.map((type) => (
+                                                                <SelectItem key={type} value={type}>{type}</SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="portionWeight"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Portion Weight (g) <span className="text-muted-foreground text-xs">optional</span></FormLabel>
+                                                    <FormControl>
+                                                        <Input type="number" {...field} className="bg-background/50 border-input/50 focus:border-primary/50" />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
                                         <Button type="submit" className="w-full bg-primary hover:bg-primary/90 shadow-neon font-semibold text-white transition-all hover:scale-[1.02]" disabled={createLogMutation.isPending}>
                                             {createLogMutation.isPending ? (
                                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

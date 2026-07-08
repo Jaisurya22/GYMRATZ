@@ -5,9 +5,12 @@ import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
-import { User as SelectUser } from "@shared/schema";
+import { insertUserSchema, type User as SelectUser } from "@shared/schema";
+import crypto from "crypto";
 
 const scryptAsync = promisify(scrypt);
+
+const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(64).toString("hex");
 
 async function hashPassword(password: string) {
     const salt = randomBytes(16).toString("hex");
@@ -24,7 +27,7 @@ async function comparePasswords(supplied: string, stored: string) {
 
 export function setupAuth(app: Express) {
     const sessionSettings: session.SessionOptions = {
-        secret: process.env.SESSION_SECRET || "super secret session settings",
+        secret: SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
         store: storage.sessionStore,
@@ -57,14 +60,25 @@ export function setupAuth(app: Express) {
 
     app.post("/api/register", async (req, res, next) => {
         try {
-            const existingUser = await storage.getUserByUsername(req.body.username);
-            if (existingUser) {
-                return res.status(400).send("Username already exists");
+            const parsed = insertUserSchema.safeParse(req.body);
+            if (!parsed.success) {
+                return res.status(400).json({ message: "Invalid input", errors: parsed.error.flatten().fieldErrors });
             }
 
-            const hashedPassword = await hashPassword(req.body.password);
+            const { username, password } = parsed.data;
+
+            if (password.length < 6) {
+                return res.status(400).json({ message: "Password must be at least 6 characters" });
+            }
+
+            const existingUser = await storage.getUserByUsername(username);
+            if (existingUser) {
+                return res.status(400).json({ message: "Username already exists" });
+            }
+
+            const hashedPassword = await hashPassword(password);
             const user = await storage.createUser({
-                ...req.body,
+                username,
                 password: hashedPassword,
             });
 

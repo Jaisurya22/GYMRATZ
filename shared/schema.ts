@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, numeric, boolean, date } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -6,6 +6,15 @@ export const users = pgTable("users", {
     id: serial("id").primaryKey(),
     username: text("username").notNull().unique(),
     password: text("password").notNull(),
+    weight: numeric("weight", { precision: 5, scale: 1 }),
+    height: numeric("height", { precision: 5, scale: 1 }),
+    age: integer("age"),
+    gender: text("gender"),
+    activityLevel: text("activity_level"),
+    calorieTarget: integer("calorie_target"),
+    proteinTarget: integer("protein_target"),
+    carbsTarget: integer("carbs_target"),
+    fatTarget: integer("fat_target"),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -13,7 +22,22 @@ export const insertUserSchema = createInsertSchema(users).pick({
     password: true,
 });
 
+export const updateUserSchema = createInsertSchema(users)
+    .pick({
+        weight: true,
+        height: true,
+        age: true,
+        gender: true,
+        activityLevel: true,
+        calorieTarget: true,
+        proteinTarget: true,
+        carbsTarget: true,
+        fatTarget: true,
+    })
+    .partial();
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export type UpdateUser = z.infer<typeof updateUserSchema>;
 export type User = typeof users.$inferSelect;
 
 export const exercises = pgTable("exercises", {
@@ -36,7 +60,10 @@ export const workoutExercises = pgTable("workout_exercises", {
     exerciseId: integer("exercise_id").notNull().references(() => exercises.id),
     sets: integer("sets").notNull(),
     reps: integer("reps").notNull(),
-    weight: integer("weight"),
+    weight: numeric("weight", { precision: 6, scale: 1 }),
+    restTime: integer("rest_time"),
+    rpe: numeric("rpe", { precision: 3, scale: 1 }),
+    notes: text("notes"),
 });
 
 export const foodLogs = pgTable("food_logs", {
@@ -45,10 +72,11 @@ export const foodLogs = pgTable("food_logs", {
     date: text("date").notNull(),
     mealType: text("meal_type").notNull(),
     foodName: text("food_name").notNull(),
-    calories: integer("calories").notNull(),
-    protein: integer("protein").notNull(),
-    carbs: integer("carbs").notNull(),
-    fat: integer("fat").notNull(),
+    calories: numeric("calories", { precision: 6, scale: 1 }).notNull(),
+    protein: numeric("protein", { precision: 5, scale: 1 }).notNull(),
+    carbs: numeric("carbs", { precision: 5, scale: 1 }).notNull(),
+    fat: numeric("fat", { precision: 5, scale: 1 }).notNull(),
+    portionWeight: numeric("portion_weight", { precision: 6, scale: 1 }),
 });
 
 export const insertExerciseSchema = createInsertSchema(exercises);

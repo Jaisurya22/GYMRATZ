@@ -108,6 +108,3 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
     );
 }
-
-// Helper for brand gradient
-const brandGradient = "bg-gradient-to-r from-primary to-orange-600";

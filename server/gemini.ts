@@ -11,9 +11,17 @@ export async function analyzeNutrition(text: string) {
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     try {
-        const prompt = `Analyze the food description and return a JSON object with the following fields: 
-      - foodName (string): A short, descriptive name of the food
-      - calories (number): Estimated calories
+        const prompt = `You are an expert Indian nutritionist. Analyze the food description and return a JSON object with accurate nutritional estimates.
+
+      IMPORTANT: Consider Indian cuisine specifics:
+      - Use standard Indian portion sizes (1 roti = 80-100g, 1 cup cooked rice = 150-180g, 1 bowl dal = 200ml)
+      - Account for Indian cooking methods (oil tempering, ghee usage, coconut-based gravies)
+      - Be accurate about Indian dishes (biryani, dosa, idli, chole, paneer dishes, sabzi, etc.)
+      - Factor in typical oil/fat used in Indian cooking (~1-2 tbsp per curry)
+      
+      Return a JSON object with:
+      - foodName (string): A short descriptive name
+      - calories (number): Estimated total calories
       - protein (number): Estimated protein in grams
       - carbs (number): Estimated carbs in grams
       - fat (number): Estimated fat in grams
